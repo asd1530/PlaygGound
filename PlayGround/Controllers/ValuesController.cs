@@ -1,19 +1,37 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using PlayGround.Data.Doc;
+using PlayGround.Data.Entity;
+using PlayGround.Logic;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 namespace PlayGround.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class ValuesController : BaseController
     {
+        private ImportManager importManager;
+
+        public ValuesController(IServiceProvider provider) : base(provider)
+        {
+            this.importManager = provider.GetService<ImportManager>();
+        }
+
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IList<Imports> Get()
         {
-            return new string[] { "value1", "value2" };
+            ImportData id = new ImportData()
+            {
+                Id = 0,
+                Name = "Test",
+                Description = "Test asjdhkash dsa"
+            };
+            importManager.SaveDocs(id);
+            return importManager.GetAll();
+
+            // return new string[] { "value1", "value2" };
         }
 
         // GET api/values/5
