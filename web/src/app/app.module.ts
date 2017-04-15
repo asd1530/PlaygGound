@@ -1,8 +1,8 @@
 ﻿import { AuthModule } from './auth/auth.module';
-import { RegisterModule } from './register/register.module';
 import { BrowseModule } from './browse/browse.module';
 import { AppRoutes } from './app.routing';
 import { HomeModule } from './home/home.module';
+import { UploadModule } from './upload/upload.module';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,8 @@ import { AppComponent } from './app.component';
     FormsModule,
     HttpModule,
     AppRoutes,
-    HomeModule,
+      HomeModule,
+    UploadModule,
     AuthModule,
     BrowseModule],
   providers: [],

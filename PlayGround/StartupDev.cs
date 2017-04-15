@@ -39,15 +39,19 @@ namespace PlayGround
             RegisterModels(services, new string[] { "PlayGround" }, "Manager");
             // Add framework services.
             services.AddMvc();
+            // ********************
+            // Setup CORS
+            // ********************
             var corsBuilder = new CorsPolicyBuilder();
             corsBuilder.AllowAnyHeader();
             corsBuilder.AllowAnyMethod();
-            corsBuilder.AllowAnyOrigin();
+            corsBuilder.AllowAnyOrigin(); // For anyone access.
+            //corsBuilder.WithOrigins("http://localhost:56573"); // for a specific url. Don't add a forward slash on the end!
             corsBuilder.AllowCredentials();
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll", corsBuilder.Build());
+                options.AddPolicy("SiteCorsPolicy", corsBuilder.Build());
             });
         }
 
@@ -56,7 +60,11 @@ namespace PlayGround
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            app.UseCors(builder =>
+        builder.WithOrigins("http://localhost:4200", "http://localhost:8080")
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
             app.UseMvc();
         }
 

@@ -1,14 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using PlayGround.Data.Doc;
 using PlayGround.Data.Entity;
 using PlayGround.Logic;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PlayGround.Controllers
 {
     [Route("api/[controller]")]
+    [EnableCors("SiteCorsPolicy")]
     public class ValuesController : BaseController
     {
         private ImportManager importManager;
@@ -41,10 +48,13 @@ namespace PlayGround.Controllers
             return "value";
         }
 
-        // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<IActionResult> Post(ICollection<IFormFile> files)
         {
+            var stream = files.First().OpenReadStream();
+            var name = files.First().FileName;
+
+            return new OkObjectResult("Success");
         }
 
         // PUT api/values/5
