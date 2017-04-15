@@ -1,0 +1,7 @@
+﻿<!-- two line list -->
+<ul>
+  <li *ngFor="let person of browseService.loadPersons()">
+    <h3 md-line> {{person.firstName + ' ' + person.lastName}} </h3>
+
+  </li>
+</ul>

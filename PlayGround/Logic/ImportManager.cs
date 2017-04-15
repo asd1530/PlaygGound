@@ -30,7 +30,6 @@ namespace PlayGround.Logic
         {
             var repository = new Repository<ImportData>(this.docClient, "imports");
             repository.Create(data);
-
         }
     }
 
