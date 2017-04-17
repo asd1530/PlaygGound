@@ -1,7 +1,7 @@
 ﻿<p-growl [value]="msgs"></p-growl>
 
-<p-fileUpload name="files" url="http://localhost:8080/api/values" (onUpload)="onUpload($event)"
-              auto="true" accept="image/*" maxFileSize="1000000">
+<p-fileUpload name="files" url="http://localhost:8080/api/import" (onUpload)="onUpload($event)"
+              auto="true" accept="*/*" maxFileSize="10000000">
   <ng-template pTemplate type="content">
     <ul *ngIf="uploadedFiles.length">
       <li *ngFor="let file of uploadedFiles">{{file.name}} - {{file.size}} bytes</li>

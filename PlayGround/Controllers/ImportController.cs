@@ -7,8 +7,6 @@ using PlayGround.Data.Entity;
 using PlayGround.Logic;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +14,11 @@ namespace PlayGround.Controllers
 {
     [Route("api/[controller]")]
     [EnableCors("SiteCorsPolicy")]
-    public class ValuesController : BaseController
+    public class ImportController : BaseController
     {
         private ImportManager importManager;
 
-        public ValuesController(IServiceProvider provider) : base(provider)
+        public ImportController(IServiceProvider provider) : base(provider)
         {
             this.importManager = provider.GetService<ImportManager>();
         }
@@ -30,12 +28,11 @@ namespace PlayGround.Controllers
         public IList<Imports> Get()
         {
             ImportData id = new ImportData()
-            {
-                Id = 0,
+            {                
                 Name = "Test",
                 Description = "Test asjdhkash dsa"
             };
-            importManager.SaveDocs(id);
+           
             return importManager.GetAll();
 
             // return new string[] { "value1", "value2" };
@@ -49,10 +46,11 @@ namespace PlayGround.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ICollection<IFormFile> files)
+        public async Task<IActionResult> Post(IFormFile files)
         {
-            var stream = files.First().OpenReadStream();
-            var name = files.First().FileName;
+            var stream = files.OpenReadStream();
+            var name = files.FileName;
+            this.importManager.ExecuteImport(stream);
 
             return new OkObjectResult("Success");
         }

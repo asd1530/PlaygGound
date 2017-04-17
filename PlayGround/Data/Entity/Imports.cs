@@ -7,7 +7,7 @@ namespace PlayGround.Data.Entity
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string PeriodStart { get; set; }
-        public string PeriodEnd { get; set; }
+        public DateTime PeriodStart { get; set; }
+        public DateTime PeriodEnd { get; set; }
     }
 }

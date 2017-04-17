@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayGround", "PlayGround\PlayGround.csproj", "{95845988-34BF-4F4E-8F9B-7DEE729EDF15}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "web\", "{81BD4763-A85A-40B3-B6FD-507F02B13A17}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web(1)", "web\", "{81BD4763-A85A-40B3-B6FD-507F02B13A17}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.6.1"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_7473"
 		Debug.AspNetCompiler.PhysicalPath = "web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_7473\"

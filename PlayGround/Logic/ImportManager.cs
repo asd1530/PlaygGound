@@ -1,10 +1,15 @@
-﻿using Microsoft.Azure.Documents.Client;
+﻿using Common.Sie;
+using Microsoft.Azure.Documents.Client;
 using PlayGround.Data;
 using PlayGround.Data.Doc;
 using PlayGround.Data.Entity;
 using Santhos.DocumentDb.Repository;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Globalization;
+using System;
+using PlayGround.Common.Sie;
 
 namespace PlayGround.Logic
 {
@@ -26,10 +31,48 @@ namespace PlayGround.Logic
         {
             return DBContext.Imports.ToList();
         }
-        public void SaveDocs(ImportData data)
+        public void ExecuteImport(Stream data)
         {
-            var repository = new Repository<ImportData>(this.docClient, "imports");
-            repository.Create(data);
+            SieDocument sd = this.ParseSieStream(data);
+            this.Persist(sd);
+            this.FinishImport(sd);
+        }
+
+        private void FinishImport(SieDocument sd)
+        {
+            this.DBContext.Imports.Add(new Imports()
+            {
+                Name = "FirstTest",
+                PeriodStart = sd.RAR[0].Start.GetValueOrDefault(DateTime.Now),
+                PeriodEnd = sd.RAR[0].End.GetValueOrDefault(DateTime.Now)
+            });
+        }
+
+        private void Persist(SieDocument sd)
+        {
+            
+            var r = new Repository<ImportData>(docClient, "accounts");
+            var id = new ImportData() {
+                Name = "Test",
+                Description = "None",
+                Accounts = sd.KONTO.Values.ToList()
+            };
+            r.Create(id);
+           
+        }
+
+        private ICollection<SieBookingYear> ComputePeriods(Dictionary<int, SieBookingYear> rAR)
+        {
+            return rAR.Values.ToList();
+        }
+
+
+        private SieDocument ParseSieStream(Stream data)
+        {
+            SieDocument doc = new SieDocument();
+            doc.ReadStreamDocument(new StreamReader(data));
+            return doc;
+                
         }
     }
 
