@@ -3,6 +3,7 @@ using PlayGround.Common.Sie.Transaction;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Common.Sie
@@ -163,9 +164,9 @@ namespace Common.Sie
         /// </summary>
         public List<SieVoucher> VER { get; set; }
 
-        public GrouppedTransactions GrouppedTransactions { get; set; }
+        public Dictionary<string, Dictionary<string,List<SieTransaction>>> GrouppedTransactions { get; set; }
 
-
+        public List<SieVoucherRow> Transactions { get; set; }
         /// <summary>
         /// Does a fast scan of the file to get the Sie version it adheres to.
         /// </summary>
@@ -193,7 +194,7 @@ namespace Common.Sie
             this.ReadStreamDocument(reader);
             reader.Dispose();
         }
-   
+
 
         public void ReadStreamDocument(StreamReader reader)
         {
@@ -217,7 +218,8 @@ namespace Common.Sie
             RES = new List<SiePeriodValue>();
 
             VER = new List<SieVoucher>();
-            this.GrouppedTransactions = new GrouppedTransactions();
+            this.GrouppedTransactions = new Dictionary<string, Dictionary<string, List<SieTransaction>>>();
+            this.Transactions = new List<SieVoucherRow>();
             ValidationExceptions = new List<Exception>();
 
             InitializeDimensions();
@@ -226,10 +228,10 @@ namespace Common.Sie
             SieVoucher curVoucher = null;
 
             bool firstLine = true;
-            
+
             // foreach (var line in reader.ReadLine()) // (_fileName, Encoding.ASCII))
             string line = null;
-            while(!reader.EndOfStream)
+            while (!reader.EndOfStream)
             {
                 line = reader.ReadLine();
                 Callbacks.CallbackLine(line);
@@ -263,7 +265,7 @@ namespace Common.Sie
                         break;
 
                     case "#BTRANS":
-                        if(!IgnoreBTRANS) parseTRANS(di, curVoucher);
+                        if (!IgnoreBTRANS) parseTRANS(di, curVoucher);
                         break;
 
                     case "#DIM":
@@ -433,14 +435,14 @@ namespace Common.Sie
 
         private void parseRAR(SieDataItem di)
         {
-            
+
             rar = new SieBookingYear();
             rar.FiscalYearId = di.GetInt(0);
             rar.Start = di.GetDate(1);
             rar.End = di.GetDate(2);
             rar.FileImportId = this.fileId;
             RAR.Add(rar.FiscalYearId, rar);
-            
+
         }
 
         private void addValidationException(bool isException, Exception ex)
@@ -458,14 +460,17 @@ namespace Common.Sie
             decimal check = 0;
             foreach (var r in v.Rows)
             {
-                if(r.Token!="#RTRANS"){
-                    check += r.Amount;    
-                }else{
+                if (r.Token != "#RTRANS")
+                {
+                    check += r.Amount;
+                }
+                else
+                {
                     check -= r.Amount;
                 }
-                
+
             }
-            if (check != 0) 
+            if (check != 0)
             {
                 Callbacks.CallbackException(new SieVoucherMissmatchException(v.Series + "." + v.Number + " Sum is not zero."));
             }
@@ -550,7 +555,7 @@ namespace Common.Sie
             }
             else
             {
-                KONTO.Add(di.GetString(0), new SieAccount() {FileImportId = this.fileId, Number = di.GetString(0), Name = di.GetString(1) });
+                KONTO.Add(di.GetString(0), new SieAccount() { FileImportId = this.fileId, Number = di.GetString(0), Name = di.GetString(1) });
             }
         }
 
@@ -687,8 +692,55 @@ namespace Common.Sie
             if (!StreamValues) RES.Add(v);
             return;
         }
-        
+
         private void parseTRANS(SieDataItem di, SieVoucher v)
+        {
+            string account = di.GetString(0);
+            if (!KONTO.ContainsKey(account))
+            {
+                KONTO.Add(di.GetString(0), new SieAccount() { Number = account });
+            }
+
+            var objOffset = 0;
+            if (di.RawData.Contains("{")) objOffset = 1;
+
+            var vr = new SieTransaction()
+            {
+                Account = KONTO[account].Number,
+                Amount = di.GetDecimal(1 + objOffset),
+                RowDate = new DateMonth( di.GetDate(2 + objOffset).HasValue ? di.GetDate(2 + objOffset).Value : v.VoucherDate),
+                Text = di.GetString(3 + objOffset),
+                Quantity = di.GetIntNull(4 + objOffset),
+                CreatedBy = di.GetString(5 + objOffset),
+                Token = di.ItemType,
+                VoucherKey = string.Format("{0}{1}", v.Series, v.Number)
+            };
+            var dims = di.GetObjects();
+            if (dims == null)
+            {
+                dims = new List<SieObject>()
+                           {
+                               new SieObject()
+                               {
+                                   Dimension = new SieDimension(){  Number = string.Empty },
+                                   Name = "All",
+                                   Number = string.Empty
+                               }
+                           };
+            }
+            vr.DimensionKey = string.Format("{0}_{1}", dims.Last().Dimension.Number, dims.Last().Number);
+            if (!this.GrouppedTransactions.ContainsKey(vr.DimensionKey))
+            {
+                this.GrouppedTransactions.Add(vr.DimensionKey, new Dictionary<string,List<SieTransaction>>());
+            }
+            if (!this.GrouppedTransactions[vr.DimensionKey].ContainsKey(vr.Account))
+            {
+                this.GrouppedTransactions[vr.DimensionKey].Add(vr.Account, new List<SieTransaction>());
+            }
+            this.GrouppedTransactions[vr.DimensionKey][vr.Account].Add(vr);
+        }
+
+        /*private void parseTRANS(SieDataItem di, SieVoucher v)
         {
             string account = di.GetString(0);
             if (!KONTO.ContainsKey(account))
@@ -701,20 +753,34 @@ namespace Common.Sie
 
             var vr = new SieVoucherRow()
             {
-                FileImportId = this.fileId,
+
                 Account = KONTO[account],
                 Objects = di.GetObjects(),
                 Amount = di.GetDecimal(1 + objOffset),
-                RowDate = di.GetDate(2 + objOffset).HasValue ? di.GetDate(2+objOffset).Value : v.VoucherDate,
+                RowDate = di.GetDate(2 + objOffset).HasValue ? di.GetDate(2 + objOffset).Value : v.VoucherDate,
                 Text = di.GetString(3 + objOffset),
                 Quantity = di.GetIntNull(4 + objOffset),
                 CreatedBy = di.GetString(5 + objOffset),
                 Token = di.ItemType
             };
-            this.GrouppedTransactions.Add(vr);
+            if (vr.Objects == null)
+            {
+                vr.Objects = new List<SieObject>()
+                           {
+                               new SieObject()
+                               {
+                                   Dimension = new SieDimension(){  Number = string.Empty },
+                                   Name = "All",
+                                   Number = string.Empty
+                               }
+                           };
+            }
+            vr.DimensionKey = string.Format("{0}_{1}", vr.Objects.Last().Dimension.Number, vr.Objects.Last().Number);
+           
             v.Rows.Add(vr);
+            this.Transactions.Add(vr);
         }
-
+        */
         private void parseUB(SieDataItem di)
         {
             if (!KONTO.ContainsKey(di.GetString(1)))

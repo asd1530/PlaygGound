@@ -1,17 +1,19 @@
 ﻿using Microsoft.Azure.Documents;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Common.Sie
+namespace PlayGround.Common.Sie
 {
-
-    public class SieVoucherRow : Resource
+    public class SieTransaction : Resource
     {
-        public SieAccount Account { get; set; }
-        public List<SieObject> Objects { get; set; }
+        public int FileImportId { get; set; }
+        public string VoucherKey { get; set; }
+        public string Account { get; set; }
         public string DimensionKey { get; set; }
         public decimal Amount { get; set; }
-        public DateTime RowDate { get; set; }
+        public DateMonth RowDate { get; set; }
         public string Text { get; set; }
         public decimal? Quantity;
         public string CreatedBy { get; set; }

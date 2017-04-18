@@ -4,8 +4,8 @@ namespace Common
 {
     public class BaseSieEntity
     {
-        public Int32 Id{get; set; }
+        public int Id{get; set; }
         
-        public Int32 FileImportId { get; set;}
+        public int FileImportId { get; set;}
     }
 }
