@@ -9,5 +9,7 @@ namespace PlayGround.Data.Entity
         public string Name { get; set; }
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
+        public DateTime Modified { get; set; }
+        public int Status { get; set; }
     }
 }

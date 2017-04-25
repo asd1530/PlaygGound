@@ -40,7 +40,7 @@ namespace PlayGround.Logic
             doc.ReadStreamDocument(new StreamReader(data));
             this.Persist(doc);
             // this.ComputeTransactions(doc);
-            // this.FinishImport(currentImport.Entity, doc);
+            this.FinishImport(currentImport.Entity, doc);
         }
 
         private void FinishImport(Imports currentImport, SieDocument sd)
@@ -48,6 +48,7 @@ namespace PlayGround.Logic
             currentImport.Name = string.Format("{0}[{1}]", sd.FNAMN.Name, sd.FNAMN.OrgIdentifier);
             currentImport.PeriodStart = sd.RAR[0].Start.GetValueOrDefault(DateTime.Now);
             currentImport.PeriodEnd = sd.RAR[0].End.GetValueOrDefault(DateTime.Now);
+            currentImport.Status = 1;
             DBContext.SaveChanges();
         }
 
@@ -88,8 +89,8 @@ namespace PlayGround.Logic
                 foreach (var entry in s)
                 {
                     var w = await r.Create(entry);
-                Console.Write(w);
                 }
+            System.Console.WriteLine("------------------------------------------THE END");
 
             }
     }

@@ -12,7 +12,7 @@ namespace PlayGround.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-            optionsBuilder.UseSqlite(@"data source=""C:\Users\asd15\Documents\Visual Studio 2017\Projects\PlayGround\PlayGround\PlayGroundDB.db""");
+            optionsBuilder.UseSqlite(@"data source=""C:\Users\Home-PC\Documents\Visual Studio 2017\Projects\PlayGround\PlayGroundDB.db""");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
