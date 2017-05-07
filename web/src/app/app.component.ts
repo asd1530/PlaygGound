@@ -15,8 +15,8 @@ export class AppComponent {
     ngOnInit() {
         this.items = [
             { label: 'Home', icon: 'fa-bar-chart' },
-            { label: 'Reports', icon: 'fa-book' },
-            { label: 'Browse', icon: 'fa-calendar' },
+            { label: 'Reports', icon: 'fa-book'},
+            { label: 'Browse', icon: 'fa-calendar', routerLink: ['browse']},
             { label: 'Upload', icon: 'fa-twitter', routerLink:['upload'] },
             { label: 'Login', icon: 'fa-support', routerLink:['login'] }
             

@@ -1,7 +1,7 @@
-﻿<!-- two line list -->
-<ul>
-  <li *ngFor="let person of browseService.loadPersons()">
-    <h3 md-line> {{person.firstName + ' ' + person.lastName}} </h3>
+﻿
 
-  </li>
-</ul>
+  <p-treeTable [value]="data">
+    <p-header>Basic</p-header>
+    <p-column field="name" header="Name"></p-column>
+    <p-column field="size" header="Size"></p-column>
+  </p-treeTable>

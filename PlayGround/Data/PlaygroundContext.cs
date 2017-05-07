@@ -8,6 +8,7 @@ namespace PlayGround.Data
     public partial class PlaygroundContext : DbContext
     {
         public virtual DbSet<Imports> Imports { get; set; }
+        public virtual DbSet<AccountGroups> AccountGroups { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -24,6 +25,15 @@ namespace PlayGround.Data
                 entity.Property(e => e.PeriodEnd).HasColumnType("DATE");
 
                 entity.Property(e => e.PeriodStart).HasColumnType("DATE");
+            });
+
+            modelBuilder.Entity<AccountGroups>(entity =>
+            {
+                entity.Property(e => e.GroupKey).HasColumnType("STRING");
+
+                entity.Property(e => e.AccountStart).HasColumnType("STRING");
+
+                entity.Property(e => e.AccountEnd).HasColumnType("STRING");
             });
         }
     }

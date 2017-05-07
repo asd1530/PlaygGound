@@ -33,7 +33,7 @@ namespace Common.Sie
         /// <summary>
         /// This is the file currently being read.
         /// </summary>
-        private string _fileName;
+        private string _fileName = null;
 
         private int fileId;
         public SieDocument()

@@ -1,20 +1,17 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
-
+import { TreeNode } from 'primeng/primeng';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
 @Injectable()
 export class BrowseService {
-  serviceData: Object[];
-  constructor(private http: Http) {
-    http.get('http://localhost:1337/person').subscribe(res => {
-      this.serviceData = res.json();
-    });
-  }
+    constructor(private http: Http) {
+    };
 
-  loadPersons(): Object[] {
-    return this.serviceData;
-  }
+    loadReportData() {
+        return this.http.get('http://localhost:8080/api/browse').
+            map(response => response.json());
+    }
 }

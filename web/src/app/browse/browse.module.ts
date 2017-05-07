@@ -2,11 +2,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BrowseComponent } from './browse.component';
+import { TreeTableModule,  SharedModule } from 'primeng/primeng';
 
 @NgModule({
   imports: [
     CommonModule,
-    BROWSE_ROUTES
+      BROWSE_ROUTES,
+      TreeTableModule,
+      SharedModule
   ],
   declarations: [BrowseComponent]
 })
